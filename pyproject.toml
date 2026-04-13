@@ -1,0 +1,11 @@
+[project]
+name = "email-llm"
+version = "0.1.0"
+description = "Pipeline with UI, for emails depuration and clasification"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "requests>=2.31",
+]
