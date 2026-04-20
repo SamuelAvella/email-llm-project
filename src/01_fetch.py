@@ -1,5 +1,5 @@
 """
-01_fetch_emails.py
+01_fetch.py
 ==================
 Fase 1 — Ingesta de Datos
 
@@ -11,9 +11,9 @@ en dos archivos dentro de data/raw/:
 
 Uso:
     pip install requests
-    python 01_fetch_emails.py                        # usa defaults
-    python 01_fetch_emails.py --limit 5 --skip 0
-    python 01_fetch_emails.py --base-url http://localhost:9000
+    python 01_fetch.py                        # usa defaults
+    python 01_fetch.py --limit 5 --skip 0
+    python 01_fetch.py --base-url http://localhost:9000
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ def fetch_emails(base_url: str, limit: int, skip: int) -> list[dict]:
 
     log.info("GET %s  params=%s", url, params)
     response = requests.get(url, params=params, timeout=10)
-    response.raise_for_status()                      # → HTTPError si 4xx/5xx
+    response.raise_for_status()                      
 
     payload = response.json()
     emails  = payload.get("emails", [])
@@ -131,7 +131,7 @@ def run(base_url: str, limit: int, skip: int, raw_dir: Path) -> int:
     Ejecuta el pipeline completo de ingesta.
     Devuelve el número de emails procesados con éxito.
     """
-    # 1. Crear carpeta si no existe (equivale a mkdir -p)
+    # 1. Crear carpeta si no existe
     raw_dir.mkdir(parents=True, exist_ok=True)
     log.info("Directorio de salida: %s", raw_dir.resolve())
 
@@ -162,7 +162,7 @@ def run(base_url: str, limit: int, skip: int, raw_dir: Path) -> int:
                 path_meta.name,
             )
             saved += 1
-        except Exception as exc:                     # nunca detener el loop completo
+        except Exception as exc:                     
             log.error("  ✘  %s  →  %s", email_id, exc)
 
     log.info("─" * 60)
