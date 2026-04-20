@@ -21,7 +21,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 
-from mock_emails import MOCK_EMAILS
+from src.mock_emails import MOCK_EMAILS
 
 app = FastAPI(
     title="Email Pipeline — Mock API",
