@@ -153,6 +153,162 @@ Vuelve a ejecutar `01_fetch.py` para regenerar `data/raw/`.
 
 ## Fase 2: Limpieza de datos
 
+
+En esta fase se transforman los emails de `data/raw/` en texto limpio y utilizable para el modelo.
+
+### Objetivo
+
+Eliminar el ruido típico del cuerpo de un email antes de pasarlo al LLM:
+
+- HTML y entidades como `&nbsp;`
+- hilos citados de respuestas anteriores
+- mensajes reenviados
+- firmas y cierres automáticos
+- disclaimers legales
+- URLs, emails y teléfonos en el cuerpo
+
+El limpiador anonimiza los datos sensibles con placeholders:
+
+- `<EMAIL>`
+- `<PHONE>`
+- `<URL>`
+
+### Script de la fase
+
+El punto de entrada es:
+
+```bash
+uv run python src/02_clean.py
+```
+
+Este script:
+
+- lee todos los `*.txt` de `data/raw/`
+- aplica las reglas RegEx definidas en `src/cleaning.py`
+- escribe el resultado en `data/clean/`
+- genera un reporte agregado en JSON
+
+### Ejecución
+
+Cuando ya tengas `data/raw/` generado por la Fase 1, ejecuta:
+
+```bash
+uv run python src/02_clean.py
+```
+
+También puedes indicar rutas personalizadas:
+
+```bash
+uv run python src/02_clean.py --input-dir data/raw --output-dir data/clean
+```
+
+Y si quieres guardar el reporte en otra ubicación:
+
+```bash
+uv run python src/02_clean.py --report-path data/clean/reporte_step2.json
+```
+
+### Output generado
+
+Después de ejecutar la limpieza encontrarás:
+
+```
+data/clean/
+├── msg_001.txt
+├── msg_002.txt
+├── ...
+└── _cleaning_report.json
+```
+
+- `msg_XXX.txt` contiene la versión limpia del email.
+- `_cleaning_report.json` resume lo que se eliminó o anonimizó.
+
+Output esperado en consola:
+
+```text
+19:05:12  INFO      clean  msg_001.txt -> msg_001.txt (914 -> 222 chars)
+19:05:12  INFO      clean  msg_002.txt -> msg_002.txt (462 -> 249 chars)
+...
+19:05:12  INFO      Cleaning report written to .../data/clean/_cleaning_report.json
+19:05:12  INFO      Cleaned 10 email(s): 4623 -> 2431 chars
+```
+
+### Qué contiene `_cleaning_report.json`
+
+El reporte guarda, para el total y para cada archivo:
+
+- caracteres antes y después de limpiar
+- bloques citados eliminados
+- mensajes reenviados eliminados
+- firmas o disclaimers cortados
+- emails, teléfonos y URLs anonimizados
+- motivo de truncado si el contenido se cortó en una firma, hilo citado o forward
+
+Ejemplo de entrada:
+
+```json
+{
+  "source_file": "msg_001.txt",
+  "output_file": "msg_001.txt",
+  "raw_chars": 914,
+  "clean_chars": 222,
+  "chars_removed": 692,
+  "quoted_blocks_removed": 1,
+  "forwarded_blocks_removed": 0,
+  "signature_blocks_removed": 0,
+  "disclaimer_blocks_removed": 0,
+  "email_redactions": 1,
+  "phone_redactions": 1,
+  "url_redactions": 1,
+  "truncated_by": "quoted_thread"
+}
+```
+
+### Validación manual recomendada
+
+Antes de seguir a la Fase 3, revisa al menos estos casos:
+
+- `data/clean/msg_001.txt`
+- `data/clean/msg_007.txt`
+- `data/clean/msg_010.txt`
+
+Comprueba que:
+
+- se mantiene el contenido útil del email
+- desaparece el ruido de firmas, hilos y disclaimers
+- los datos personales quedan anonimizados
+- no se pierden señales importantes como `ORDER #998822`, `ticket #5544` o `HTTP 500`
+
+### Tests
+
+La fase incluye pruebas básicas en:
+
+```bash
+tests/test_cleaning.py
+```
+
+Para ejecutarlas:
+
+```bash
+uv run python -m unittest discover -s tests -v
+```
+
+Estas pruebas verifican que:
+
+- se elimina ruido típico
+- se anonimizan contactos
+- se conserva la estructura útil de un bug report
+- se genera el reporte JSON
+
+### Flujo completo de la fase
+
+Si cambias los emails mock o regeneras `data/raw/`, vuelve a ejecutar:
+
+```bash
+uv run python src/01_fetch.py
+uv run python src/02_clean.py
+```
+
 ---
 
 ## Fase 3: Llamadas a modelo LLM

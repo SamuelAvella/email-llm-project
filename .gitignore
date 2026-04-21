@@ -28,4 +28,5 @@ data/scored_emails.json
 # Proyecto específico
 .venv
 /data/raw
+/data/clean
 /src/__pycache__
