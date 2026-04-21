@@ -18,7 +18,9 @@ email-pipeline/
     ├── config.py           ← URLs, rutas y constantes centralizadas
     ├── mock_emails.py      ← base de datos mock (estructura Gmail API)
     ├── email_api_server.py ← servidor FastAPI que simula la Gmail API
-    └── 01_fetch.py         ← cliente que descarga y persiste los emails
+    ├── 01_fetch.py         ← cliente que descarga y persiste los emails
+    ├── scoring.py          ← fórmula de scoring de urgencia
+    └── dashboard.py        ← dashboard Streamlit con cola de priorización
 ```
 
 > `data/` no se incluye en el repositorio — se genera ejecutando `01_fetch.py`.
@@ -144,10 +146,63 @@ Vuelve a ejecutar `01_fetch.py` para regenerar `data/raw/`.
 | `fastapi` | Servidor HTTP que simula la Gmail API |
 | `uvicorn` | Servidor ASGI que arranca FastAPI |
 | `requests` | Cliente HTTP para hacer el GET desde `01_fetch.py` |
+| `streamlit` | Dashboard interactivo para la cola de priorización |
+| `pandas` | Manipulación de datos tabulares en el dashboard |
 
 ---
+
 ## Fase 2: Limpieza de datos
+
 ---
+
 ## Fase 3: Llamadas a modelo LLM
+
 ---
-## Fase 4: Visualización con StreamLit
+
+## Fase 4: Scoring + Dashboard
+
+### Fórmula de urgencia
+
+Cada email recibe una puntuación calculada con:
+
+```
+score = sentiment_w + topic_w + min(age_days × age_mult, max_age) − (1 − confidence) × 5
+```
+
+| Componente | Qué mide | Por qué |
+|---|---|---|
+| `sentiment_w` | Tono emocional del email | Un cliente enfadado (`very_negative` = 40 pts) necesita atención antes que uno contento (`positive` = 5 pts) |
+| `topic_w` | Categoría del email | Una queja (30 pts) o un bug (25 pts) bloquean al usuario; un feature request (10 pts) puede esperar |
+| `age_bonus` | Días sin respuesta × 0.5 (máx. 20) | Un email ignorado durante días se vuelve más urgente, pero con tope para que los muy antiguos no dominen |
+| `conf_penalty` | Confianza del LLM | Si el modelo no está seguro de su análisis, restamos puntos para no priorizar datos poco fiables |
+
+Según la puntuación total, cada email se clasifica en un tier:
+
+| Tier | Umbral |
+|---|---|
+| 🔴 CRITICAL | ≥ 70 |
+| 🟠 HIGH | ≥ 45 |
+| 🟡 MEDIUM | ≥ 25 |
+| 🟢 LOW | < 25 |
+
+### Ejecutar el scoring
+
+```bash
+python src/scoring.py
+```
+
+Genera `data/scored_emails.json` con los emails ordenados por urgencia.
+
+### Lanzar el dashboard
+
+```bash
+streamlit run src/dashboard.py
+```
+
+El dashboard muestra:
+- Métricas resumen por tier (cuántos emails hay en cada nivel)
+- Cola de priorización ordenada por puntuación
+- Desglose individual de cada email (cómo se compone su score)
+- Sliders interactivos en la barra lateral para modificar todos los pesos
+
+**Demo clave:** al mover los sliders, el ranking se recalcula en tiempo real. Por ejemplo, si subes el peso de "Bug" por encima de "Complaint", los emails de bugs suben en la cola. Si pones el multiplicador de edad a 0, los emails antiguos pierden su bonus.
