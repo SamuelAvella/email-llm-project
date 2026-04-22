@@ -1,6 +1,6 @@
 """
 Paso 3 · Análisis con LLM local (Ollama)
------------------------------------------
+==================
 Lee los emails limpios de data/clean/*.txt (salida del Paso 2),
 llama al modelo local para extraer características estructuradas y
 guarda el resultado en data/analyzed_emails.json con esta estructura:

@@ -19,8 +19,6 @@ env/
 .DS_Store
 Thumbs.db
 desktop.ini
-# Archivos generados por el pipeline
-data/scored_emails.json
 # Streamlit
 .streamlit/
 # Variables de entorno
@@ -30,3 +28,6 @@ data/scored_emails.json
 /data/raw
 /data/clean
 /src/__pycache__
+data/scored_emails.json
+data/analyzed_emails.json
+data/analyzed_emails_prueba.json

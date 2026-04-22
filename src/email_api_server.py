@@ -3,17 +3,13 @@ email_api_server.py
 ====================
 FastAPI simulada · Fase 1 — Fuente de Datos Mock
 
-Los datos viven en mock_emails.py — este archivo solo contiene lógica HTTP.
-Para añadir emails nuevos edita mock_emails.py, no este archivo.
+Los datos proceden de mock_emails.py — este archivo solo contiene lógica HTTP.
 
 Endpoints:
     GET /health
     GET /emails?limit=50&skip=0
     GET /emails/{email_id}
 
-Inicio rápido:
-    pip install fastapi uvicorn
-    uvicorn email_api_server:app --reload --port 8000
 """
 
 from __future__ import annotations
@@ -21,7 +17,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import JSONResponse
 
-from src.mock_emails import MOCK_EMAILS
+from data.mock_emails import MOCK_EMAILS
 
 app = FastAPI(
     title="Email Pipeline — Mock API",
