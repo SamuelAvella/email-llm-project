@@ -9,4 +9,5 @@ dependencies = [
     "uvicorn>=0.29",
     "requests>=2.31",
     "streamlit>=1.56.0",
+    "pandas>=3.0.2",
 ]
