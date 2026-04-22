@@ -17,7 +17,7 @@ import sys
 from datetime import datetime, timezone
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ANALYSIS_PATH = os.path.join(BASE_DIR, "data", "analyzed_emails_prueba.json")
+ANALYSIS_PATH = os.path.join(BASE_DIR, "data", "analyzed_emails.json")
 OUTPUT_PATH = os.path.join(BASE_DIR, "data", "scored_emails.json")
 
 # ── Pesos por defecto ─────────────────────────────────────────────
