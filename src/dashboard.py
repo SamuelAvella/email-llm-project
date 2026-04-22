@@ -26,7 +26,7 @@ from src.scoring import (
 
 # ── Config ────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_PATH = os.path.join(BASE_DIR, "data", "analyzed_emails_prueba.json")
+DATA_PATH = os.path.join(BASE_DIR, "data", "analyzed_emails.json")
 
 st.set_page_config(page_title="📧 Email Priority Queue", layout="wide")
 st.title("📧 Email Priority Queue")

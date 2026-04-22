@@ -313,7 +313,62 @@ uv run python src/02_clean.py
 
 ## Fase 3: Llamadas a modelo LLM
 
----
+En esta fase se procesan los emails limpios (`data/clean/`) usando un modelo LLM local para convertir texto no estructurado en datos estructurados.
+
+### Objetivo
+
+Extraer automáticamente de cada email:
+
+- sentimiento (`positivo`, `negativo`, `neutro`)
+- tema principal
+- resumen (1 frase)
+- nivel de confianza del modelo (0–1)
+
+Esto permite transformar texto libre en variables que luego se usarán en el scoring.
+
+### Requisitos
+
+Descargar el modelo:
+
+ollama pull gemma3:1b
+
+### Ejecución completa del pipeline
+
+Necesitas dos terminales abiertas.
+
+### Terminal 1 — servidor API (siempre abierta)
+```bash
+uv run uvicorn src.email_api_server:app --reload
+```
+
+### Terminal 2 — ejecutar pipeline en orden
+```bash
+uv run python src/01_fetch.py
+uv run python src/02_clean.py
+uv run python src/03_analyze.py
+```
+
+### Qué hace 03_analyze.py
+- lee los emails limpios desde data/clean/
+- envía cada email al modelo LLM local
+- genera un análisis estructurado en JSON
+- guarda el resultado en data/analyzed_emails.json
+
+### Output generado
+Ejemplo de salida:
+```bash
+{
+    "id": "msg_001",
+    "sentiment": "very_negative",
+    "sentiment_score": 0.9,
+    "topic": "Complaint",
+    "confidence": 0.95,
+    "date_parsed": "2026-02-20T09:15:00",
+    "subject": "URGENT: REFUND REQUEST - ORDER #998822",
+    "from_addr": "angry.customer@example.com",
+    "summary": "The customer is expressing extreme dissatisfaction and requesting a refund due to persistent service issues."
+  },
+```
 
 ## Fase 4: Scoring + Dashboard
 
