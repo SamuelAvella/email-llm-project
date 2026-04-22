@@ -113,7 +113,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=[s["name"] for s in STAGES],
         help="Saltar esta fase y ejecutar el resto.",
     )
-    parser.add_argument(                              # ← fuera del grupo exclusivo
+    parser.add_argument(                              
         "--dashboard",
         action="store_true",
         help="Lanzar el dashboard Streamlit al finalizar el pipeline.",
