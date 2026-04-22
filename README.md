@@ -37,6 +37,7 @@ Instalar `uv` si no lo tienes:
 ```bash
 pip install uv
 ```
+Instalar `ollama` si no lo tienes: https://ollama.com/download
 
 ---
 
