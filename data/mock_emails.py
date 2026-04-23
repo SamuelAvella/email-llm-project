@@ -1,7 +1,7 @@
 """
 mock_emails.py
 ==============
-Base de datos mock — SOLO datos, cero lógica.
+Base de datos mock 
 
 Añade emails nuevos copiando cualquier bloque existente y cambiando:
   · "id"              → siguiente número (msg_011, msg_012 ...)

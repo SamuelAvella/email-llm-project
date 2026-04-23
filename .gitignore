@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+# Entornos virtuales
+venv/
+.venv/
+env/
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+# Streamlit
+.streamlit/
+# Variables de entorno
+.env
+# Proyecto específico
+.venv
+/data/raw
+/data/clean
+/src/__pycache__
+data/scored_emails.json
+data/analyzed_emails.json
+data/analyzed_emails_prueba.json
